@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nefes">
+  <meta name="theme-color" content="#0b0f1a">
+  <title>Nefes — Sigara Takip</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-dot" aria-hidden="true"></div>
+        <div>
+          <h1 class="brand-title">Nefes</h1>
+          <p class="brand-sub" id="header-subtitle">Sigara Takip</p>
+        </div>
+      </div>
+      <div class="header-pill" id="header-streak-pill" title="Günlük durum">
+        <span class="pill-dot"></span>
+        <span id="header-pill-text">Bugün: 0</span>
+      </div>
+    </header>
+
+    <main class="main-content" id="main-content">
+      <!-- TAB: ANA SAYFA -->
+      <section class="tab-view active" id="view-home" aria-label="Ana Sayfa">
+        <div class="card hero-card">
+          <p class="hero-label">Son sigaradan beri</p>
+
+          <div class="ring-wrap">
+            <svg class="progress-ring" viewBox="0 0 220 220" aria-hidden="true">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#2dd4bf" />
+                  <stop offset="100%" stop-color="#8b5cf6" />
+                </linearGradient>
+              </defs>
+              <circle class="ring-track" cx="110" cy="110" r="94" />
+              <circle class="ring-fill" id="timer-ring-fill" cx="110" cy="110" r="94" stroke="url(#ringGrad)" />
+            </svg>
+            <div class="ring-center">
+              <div class="timer-value" id="live-timer">--:--:--</div>
+              <div class="timer-meta" id="timer-avg-label">İlk kaydını bekliyor</div>
+              <div class="timer-record" id="timer-record-label">Rekor: —</div>
+            </div>
+          </div>
+
+          <button type="button" class="smoke-btn" id="btn-smoke-now">
+            <span class="smoke-btn-glow" aria-hidden="true"></span>
+            <span class="smoke-btn-inner">
+              <svg class="smoke-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>Sigara İçtim</span>
+            </span>
+          </button>
+
+          <button type="button" class="text-link-btn" id="btn-open-backdate">
+            + Geçmiş saatle ekle
+          </button>
+        </div>
+
+        <div class="stats-grid-2">
+          <div class="card metric-card">
+            <div class="metric-top">
+              <span class="metric-label">Bugün / Limit</span>
+              <span class="metric-badge" id="today-limit-badge">0 / 10</span>
+            </div>
+            <div class="metric-val" id="today-count-val">0 adet</div>
+            <div class="mini-bar">
+              <div class="mini-bar-fill" id="today-limit-bar"></div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-top">
+              <span class="metric-label">Bugün Ort. Ara</span>
+            </div>
+            <div class="metric-val" id="today-avg-gap">—</div>
+            <div class="metric-sub" id="today-last-gap">Son ara: —</div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-top">
+              <span class="metric-label">Bugünkü Harcama</span>
+            </div>
+            <div class="metric-val" id="today-spend">₺0</div>
+            <div class="metric-sub" id="today-pack-sub">Paket: ₺100 / 20</div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-top">
+              <span class="metric-label">Dünle Kıyas</span>
+            </div>
+            <div class="metric-val-sm" id="yesterday-compare">Veri birikiyor</div>
+            <div class="metric-sub" id="yesterday-compare-sub">Aynı saat itibarıyla</div>
+          </div>
+        </div>
+
+        <div class="card milestone-card" id="milestone-card">
+          <div class="milestone-header">
+            <div>
+              <span class="section-eyebrow">İyileşme Süreci</span>
+              <h2 class="card-title" id="milestone-title">İlk hedef: 20 dakika</h2>
+            </div>
+            <span class="milestone-pct" id="milestone-pct">%0</span>
+          </div>
+          <p class="milestone-desc" id="milestone-desc">Son sigaradan 20 dakika sonra nabız ve tansiyon normale dönmeye başlar.</p>
+          <div class="mini-bar milestone-bar">
+            <div class="mini-bar-fill milestone-fill" id="milestone-bar"></div>
+          </div>
+          <div class="milestone-footer" id="milestone-footer">Kalan: —</div>
+        </div>
+      </section>
+
+      <!-- TAB: İSTATİSTİK -->
+      <section class="tab-view" id="view-stats" aria-label="İstatistik">
+        <div class="segmented" role="tablist" aria-label="Zaman aralığı">
+          <button type="button" class="seg-btn active" data-range="7">7 Gün</button>
+          <button type="button" class="seg-btn" data-range="30">30 Gün</button>
+          <button type="button" class="seg-btn" data-range="all">Tümü</button>
+        </div>
+
+        <div class="stats-grid-2 stats-summary-grid" id="stats-summary-tiles"></div>
+
+        <div class="card chart-card">
+          <div class="card-head-row">
+            <div>
+              <h2 class="card-title">Günlük Tüketim</h2>
+              <p class="card-sub">Kesikli çizgi günlük hedefini gösterir</p>
+            </div>
+          </div>
+          <div class="chart-box" id="chart-daily"></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head-row">
+            <div>
+              <h2 class="card-title">Saatlik Dağılım</h2>
+              <p class="card-sub" id="chart-hourly-sub">Günün hangi saatlerinde daha sık</p>
+            </div>
+          </div>
+          <div class="chart-box" id="chart-hourly"></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head-row">
+            <div>
+              <h2 class="card-title">Ortalama Aralık Trendi</h2>
+              <p class="card-sub">Sigaralar arası süre uzadıkça kontrol artar</p>
+            </div>
+          </div>
+          <div class="chart-box" id="chart-gap-trend"></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head-row">
+            <div>
+              <h2 class="card-title">Haftanın Günleri</h2>
+              <p class="card-sub">Günlük ortalama adet</p>
+            </div>
+          </div>
+          <div class="chart-box" id="chart-weekday"></div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head-row">
+            <div>
+              <h2 class="card-title">Tetikleyiciler</h2>
+              <p class="card-sub">Eklediğin etiketlerin dağılımı</p>
+            </div>
+          </div>
+          <div id="chart-tags"></div>
+        </div>
+
+        <div class="card insights-card">
+          <span class="section-eyebrow">Akıllı Analiz</span>
+          <h2 class="card-title">İçgörüler</h2>
+          <ul class="insights-list" id="insights-list"></ul>
+        </div>
+      </section>
+
+      <!-- TAB: GEÇMİŞ -->
+      <section class="tab-view" id="view-history" aria-label="Geçmiş">
+        <div class="history-top-bar">
+          <h2 class="section-heading">Kayıt Geçmişi</h2>
+          <button type="button" class="chip-action-btn" id="btn-history-add">+ Ekle</button>
+        </div>
+        <div id="history-list"></div>
+      </section>
+
+      <!-- TAB: AYARLAR -->
+      <section class="tab-view" id="view-settings" aria-label="Ayarlar">
+        <div class="card settings-card">
+          <h2 class="card-title">Hedef ve Maliyet</h2>
+          <div class="form-group">
+            <label for="set-daily-limit">Günlük Limit (adet)</label>
+            <input type="number" id="set-daily-limit" min="1" max="100" inputmode="numeric">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="set-pack-price">Paket Fiyatı (₺)</label>
+              <input type="number" id="set-pack-price" min="1" max="5000" step="0.5" inputmode="decimal">
+            </div>
+            <div class="form-group">
+              <label for="set-pack-size">Paketteki Adet</label>
+              <input type="number" id="set-pack-size" min="1" max="100" inputmode="numeric">
+            </div>
+          </div>
+          <button type="button" class="primary-btn" id="btn-save-settings">Ayarları Kaydet</button>
+          <p class="form-feedback" id="settings-feedback" aria-live="polite"></p>
+        </div>
+
+        <div class="card settings-card">
+          <h2 class="card-title">Yedekleme ve Veri</h2>
+          <p class="card-sub">Verilerin tamamen cihazında saklanır. Başka bir linke geçerken veya düzenli yedek için dışa aktar.</p>
+          <div class="btn-stack">
+            <button type="button" class="secondary-btn" id="btn-export">Veriyi Dışa Aktar (JSON)</button>
+            <button type="button" class="secondary-btn" id="btn-import-trigger">Veriyi İçe Aktar (JSON)</button>
+            <input type="file" id="import-file-input" accept=".json,application/json" hidden>
+            <button type="button" class="danger-btn" id="btn-clear-all">Tüm Veriyi Sil</button>
+          </div>
+          <p class="form-feedback" id="backup-feedback" aria-live="polite"></p>
+        </div>
+
+        <div class="card info-card">
+          <h2 class="card-title">Arka Plan ve iPhone Hakkında</h2>
+          <p class="info-text">
+            iPhone'da web uygulamaları ekran kapalıyken arka planda sürekli çalışmaz; ancak <strong>Nefes</strong> her sigarayı tam zaman damgasıyla kaydeder. Uygulamayı ne zaman açarsan aç aradaki süre, rekorlar ve tüm istatistikler milisaniyesi milisaniyesine doğru hesaplanır ve çevrimdışı çalışır.
+          </p>
+          <p class="info-text">
+            Veriler tarayıcı hafızasında tutulur. Safari geçmişini/site verilerini temizlersen silinebileceği için düzenli aralıklarla JSON yedeği almanı öneririz.
+          </p>
+          <p class="version-label">Nefes v1.0 • Çevrimdışı PWA</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tab-bar" aria-label="Ana menü">
+      <button type="button" class="tab-btn active" data-tab="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5"/><path d="M9 2h6"/>
+        </svg>
+        <span>Ana Sayfa</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="stats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20v-4"/>
+        </svg>
+        <span>İstatistik</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/>
+        </svg>
+        <span>Geçmiş</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Ayarlar</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- QUICK TAG / UNDO SHEET -->
+  <div class="quick-sheet hidden" id="quick-sheet" role="status" aria-live="polite">
+    <div class="quick-sheet-top">
+      <span class="quick-sheet-title">Kayıt eklendi • Tetikleyici seç</span>
+      <button type="button" class="undo-btn" id="btn-undo-last">Geri Al</button>
+    </div>
+    <div class="tag-chips" id="quick-tag-chips"></div>
+  </div>
+
+  <!-- ADD / EDIT MODAL -->
+  <div class="modal-backdrop hidden" id="entry-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Kayıt Düzenle</h3>
+        <button type="button" class="icon-close-btn" id="btn-modal-close" aria-label="Kapat">✕</button>
+      </div>
+      <div class="form-group">
+        <label for="modal-datetime">Tarih ve Saat</label>
+        <input type="datetime-local" id="modal-datetime">
+      </div>
+      <div class="form-group">
+        <label>Tetikleyiciler</label>
+        <div class="tag-chips" id="modal-tag-chips"></div>
+      </div>
+      <div class="form-group">
+        <label for="modal-note">Not (isteğe bağlı)</label>
+        <input type="text" id="modal-note" maxlength="140" placeholder="Örn: Toplantı sonrası...">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="danger-btn hidden" id="btn-modal-delete">Sil</button>
+        <button type="button" class="primary-btn" id="btn-modal-save">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
